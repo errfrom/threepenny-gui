@@ -23,7 +23,7 @@ module Graphics.UI.Threepenny.Core (
         string,
         getHead, getBody,
         (#+), children, text, html, attr, style, value,
-    getElementsByTagName, getElementById, getElementsByClassName,
+    getElementsByTagName, getElementById, getElementsByClassName, getChild,
 
     -- * Layout
     -- | Combinators for quickly creating layouts.
@@ -59,7 +59,7 @@ module Graphics.UI.Threepenny.Core (
 
     ) where
 
-import Control.Monad          (forM_, forM, void)
+import Control.Monad          (forM_, forM, liftM, void)
 import Control.Monad.Fix
 import Control.Monad.IO.Class
 
@@ -129,7 +129,7 @@ attr name = mkWriteAttr $ \s el ->
 
 -- | Set CSS style of an Element
 style :: WriteAttr Element [(String,String)]
-style = mkWriteAttr $ \xs el -> forM_ xs $ \(name,val) -> 
+style = mkWriteAttr $ \xs el -> forM_ xs $ \(name,val) ->
     runFunction $ ffi "%1.style[%2] = %3" el name val
 
 -- | Value attribute of an element.
@@ -156,6 +156,14 @@ getHead _ = fromJSObject =<< callFunction (ffi "document.head")
 -- | Get the body of the page.
 getBody :: Window -> UI Element
 getBody _ = fromJSObject =<< callFunction (ffi "document.body")
+
+-- | Get the first child element.
+getChild :: Element -> UI (Maybe Element)
+getChild el = do
+  objs <- callFunction (ffi "$(%1).children()" el)
+  case objs of
+    []      -> return Nothing
+    [child] -> liftM (\x -> Just x) (fromJSObject child)
 
 -- | Get all elements of the given tag name.
 getElementsByTagName
@@ -350,7 +358,7 @@ fromJQueryProp name from to = mkReadWriteAttr get set
 fromObjectProperty :: (FromJS a, ToJS a) => String -> Attr Element a
 fromObjectProperty name = mkReadWriteAttr get set
     where
-    set v el = runFunction  $ ffi ("%1." ++ name ++ " = %2") el v    
+    set v el = runFunction  $ ffi ("%1." ++ name ++ " = %2") el v
     get   el = callFunction $ ffi ("%1." ++ name) el
 
 {-----------------------------------------------------------------------------

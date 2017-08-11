@@ -87,6 +87,7 @@ Library
                     ,Graphics.UI.Threepenny.SVG.Elements
                     ,Graphics.UI.Threepenny.Timer
                     ,Graphics.UI.Threepenny.Widgets
+                    ,Graphics.UI.Threepenny.Internal
                     ,Reactive.Threepenny
   other-modules:
                      Foreign.JavaScript.EventLoop
@@ -95,7 +96,6 @@ Library
                     ,Foreign.JavaScript.Resources
                     ,Foreign.JavaScript.Server
                     ,Foreign.JavaScript.Types
-                    ,Graphics.UI.Threepenny.Internal
                     ,Reactive.Threepenny.Memo
                     ,Reactive.Threepenny.Monads
                     ,Reactive.Threepenny.PulseLatch
